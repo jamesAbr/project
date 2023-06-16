@@ -52,3 +52,5 @@ def get_site():
 def get_device():
     df["device"] = df["user_agent"].str.split("(").str[1]
     df["device"] = df["device"].str.split(";").str[0]
+
+## 
