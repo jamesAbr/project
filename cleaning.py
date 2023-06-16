@@ -30,7 +30,7 @@ def pct_nulls(x):
 def clean_nulls(x):
     nulls = pct_nulls(x)
     if all(i <= 5.0 for i in nulls):
-        data = x.dropna(inplace = True)
+        df = x.dropna(inplace = True)
     else:
         print("Nulls exceed 5% of total data frame, utilize appropriate data science techniques for replacing null values")
 
@@ -53,4 +53,22 @@ def get_device():
     df["device"] = df["user_agent"].str.split("(").str[1]
     df["device"] = df["device"].str.split(";").str[0]
 
-###
+# converting clicks and impression values 
+# needs to be fixed, this does not works
+
+def convert_outcomes():
+    df["outcome"] = 1
+    for i, row in df.iterrows():
+        if row["event_name"] != "click":
+            df.loc[i, "outcome"] = 0
+
+
+# what gets called  
+count_nulls(df)
+pct_nulls(df)
+clean_nulls(df)
+get_platform()
+get_site()
+get_device()
+convert_outcomes()
+print(df)
