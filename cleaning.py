@@ -53,9 +53,20 @@ def get_device():
     df["device"] = df["user_agent"].str.split("(").str[1]
     df["device"] = df["device"].str.split(";").str[0]
 
-# converting clicks and impression values 
-# needs to be fixed, this does not works
+# function for extracting time of day
+def get_time_of_day():
+    df["hour"] = df["created_at"].str.slice(start = 10, stop =13)
+    df["hour"] = pd.to_numeric(df["hour"])
+    for i, row in df.iterrows():
+        hour = row["hour"]
+        if 0 <= hour < 12:
+            df.at[i, "time_of_day"] = "morning"
+        elif 12 < hour < 18:
+            df.at[i, "time_of_day"] = "afternoon"
+        else:
+            df.at[i, "time_of_day"] = "night"
 
+# function for converting clicks and impression values 
 def convert_outcomes():
     df["outcome"] = 1
     for i, row in df.iterrows():
@@ -63,12 +74,22 @@ def convert_outcomes():
             df.loc[i, "outcome"] = 0
 
 
-# what gets called  
-count_nulls(df)
-pct_nulls(df)
-clean_nulls(df)
-get_platform()
-get_site()
-get_device()
-convert_outcomes()
-print(df)
+# function that does everything
+def cleaner(x):
+    count_nulls(df)
+    pct_nulls(df)
+    get_platform()
+    get_site()
+    get_device()
+    get_time_of_day()
+    convert_outcomes()
+    clean_nulls(df)
+
+
+# call to action and filter for only CBS Sports site 
+cleaner(df)
+site_options = ["cbssports"]
+df = df[df["site"].isin(site_options)]
+
+
+# if run into problems down road with nulls, impute mode for most categorical columns 
